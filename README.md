@@ -14,7 +14,7 @@ Then open `http://localhost:3000/`. Opening HTML with `file://` is not supported
 
 ## Configure a real deployment URL
 
-Before production, replace `publicOrigin` in `assets/js/site-config.js`, the origin in `robots.txt`, and every `<loc>` in `sitemap.xml` with the actual public HTTPS origin. Keep canonical and Open Graph tags aligned with that origin. If the site is deployed under a repository subpath, set each page's `data-root` attribute to that subpath (for example `/typesprint`) and retain relative asset paths.
+The current configuration is set to the GitHub Pages project URL shown in the project setup: `https://mohamed-abbas-os.github.io/TypeSpirint-project/`. If the repository name or account differs, update `assets/js/site-config.js`, canonical/Open Graph URLs, `robots.txt`, and `sitemap.xml` together. Asset and passage-data paths are relative to their modules so they work under a GitHub Pages repository subpath.
 
 ## Deploy
 

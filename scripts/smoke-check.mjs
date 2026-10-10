@@ -12,6 +12,8 @@ const htmlFiles = [];
 function walk(dir) { for (const entry of fs.readdirSync(dir, { withFileTypes: true })) { if (['.git','node_modules'].includes(entry.name)) continue; const full = path.join(dir, entry.name); if (entry.isDirectory()) walk(full); else if (entry.name.endsWith('.html')) htmlFiles.push(full); } }
 walk(root);
 const errors = [];
+if (fs.readFileSync(path.join(root, 'assets/js/site-config.js'), 'utf8').includes('example.com')) errors.push('site-config.js still contains the example.com placeholder');
+if (fs.readFileSync(path.join(root, 'robots.txt'), 'utf8').includes('Disallow: /assets/')) errors.push('robots.txt must not block CSS/JavaScript assets from crawlers');
 for (const file of htmlFiles) {
   const html = fs.readFileSync(file, 'utf8');
   if (!/<title>[^<]+<\/title>/i.test(html)) errors.push(`${path.relative(root, file)} has no title`);
@@ -23,4 +25,4 @@ for (const file of htmlFiles) {
   }
 }
 if (errors.length) throw new Error(errors.join('\n'));
-console.log(`TypeSprint smoke check passed: ${htmlFiles.length} HTML files, ${manifest.routes.length} routes.`);
+console.log(`TypeSprint smoke check passed: ${htmlFiles.length} HTML files, ${manifest.routes.length} routes, required assets present, local HTML references valid.`);

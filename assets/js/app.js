@@ -13,6 +13,6 @@ export function initShell() {
   document.querySelectorAll('[data-ad-slot]').forEach(slot => { if (SITE.ads.enabled && SITE.ads.publisherId) { slot.hidden = false; slot.className = 'ad-slot'; slot.textContent = 'Advertisement'; } else slot.remove(); });
   const toast = document.querySelector('[data-toast]');
   window.typeSprintToast = (message) => { if (!toast) return; toast.textContent = message; toast.classList.add('is-visible'); window.clearTimeout(window.typeSprintToast.timer); window.typeSprintToast.timer = window.setTimeout(() => toast.classList.remove('is-visible'), 2600); };
-  document.querySelector('[data-contact-form]')?.addEventListener('submit', e => { e.preventDefault(); const status = document.querySelector('[data-form-status]'); status.textContent = 'Thanks — this static demo does not transmit messages. Please use the owner email configured before launch.'; e.target.reset(); });
+  document.querySelector('[data-contact-form]')?.addEventListener('submit', e => { e.preventDefault(); const status = document.querySelector('[data-form-status]'); status.textContent = 'This form is not connected to a message service, so your message was not sent. Please contact the site owner using their published contact details.'; });
 }
 export { SITE, siteUrl };

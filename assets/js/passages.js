@@ -1,11 +1,9 @@
-import { relativeRoot } from './site-config.js';
-
 let cache;
 export const categories = {
   common: 'Common English words', sentences: 'Everyday sentences', punctuation: 'Punctuation practice', numbers: 'Numbers practice', vocabulary: 'Advanced vocabulary', programming: 'Programming-related text'
 };
 export async function loadPassages() {
-  if (!cache) cache = fetch(`${relativeRoot()}/assets/data/passages.json`).then(r => { if (!r.ok) throw new Error('Passage data could not be loaded.'); return r.json(); });
+  if (!cache) cache = fetch(new URL('../data/passages.json', import.meta.url)).then(r => { if (!r.ok) throw new Error('Passage data could not be loaded.'); return r.json(); }).catch(error => { cache = undefined; throw error; });
   return cache;
 }
 export async function pickPassage(category, difficulty, custom = '') {
