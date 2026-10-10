@@ -1,0 +1,111 @@
+{
+  "common": {
+    "beginner": [
+      "small steps make strong habits",
+      "calm hands type with care",
+      "practice turns effort into ease"
+    ],
+    "intermediate": [
+      "A clear desk can make a busy afternoon feel lighter.",
+      "The best practice session is short enough to repeat tomorrow.",
+      "Steady rhythm matters more than a frantic burst of speed."
+    ],
+    "advanced": [
+      "Consistency is a quiet advantage: it compounds when you return to the work.",
+      "A thoughtful typist notices tension early and softens the hands before errors spread.",
+      "When attention narrows to the next character, accuracy has room to lead speed."
+    ]
+  },
+  "sentences": {
+    "beginner": [
+      "The sun is warm.",
+      "I can type today.",
+      "Blue birds cross the sky."
+    ],
+    "intermediate": [
+      "A useful routine gives your fingers a familiar path through each sentence.",
+      "Read the whole line first, then let your hands follow one word at a time.",
+      "Good posture leaves your shoulders relaxed and your attention available."
+    ],
+    "advanced": [
+      "When a sentence feels difficult, slow down enough to learn its shape rather than guessing at the next word.",
+      "Typing is a conversation between attention and movement; the pause between words can be part of the rhythm.",
+      "A reliable practice plan makes improvement visible without turning every session into a competition."
+    ]
+  },
+  "punctuation": {
+    "beginner": [
+      "Ready, set, type!",
+      "Wait... then begin.",
+      "Yes, I can do this!"
+    ],
+    "intermediate": [
+      "Try commas, dashes—and parentheses (without rushing).",
+      "A question invites thought; a period gives it room.",
+      "Use quotes when a phrase needs a little extra attention."
+    ],
+    "advanced": [
+      "Punctuation is structure: colons introduce, semicolons connect, and em dashes interrupt with intent.",
+      "Can you keep a steady rhythm while typing [brackets], {braces}, and a careful apostrophe?",
+      "A precise sentence may include numbers, symbols, and pauses—yet still feel easy to follow."
+    ]
+  },
+  "numbers": {
+    "beginner": [
+      "1 2 3 4 5",
+      "2026 is a new year.",
+      "I need 2 cups of tea."
+    ],
+    "intermediate": [
+      "The route is 4.8 km and takes about 25 minutes.",
+      "Save 15% today, then review the result at 9:30.",
+      "A 5-minute warm-up can make a 20-minute session feel smoother."
+    ],
+    "advanced": [
+      "The sequence 3, 8, 13, 21 rewards patience more than speed.",
+      "Set a 60-second timer, aim for 45 WPM, and keep accuracy above 96%.",
+      "A small dataset with 1,024 entries still needs careful labels, dates, and version notes."
+    ]
+  },
+  "vocabulary": {
+    "beginner": [
+      "bright simple useful",
+      "learn focus repeat",
+      "steady gentle progress"
+    ],
+    "intermediate": [
+      "Curiosity makes unfamiliar words easier to remember.",
+      "Precision is useful when a small detail changes the meaning.",
+      "A flexible routine can support both confidence and patience."
+    ],
+    "advanced": [
+      "Metacognition helps you notice which errors are habitual and which are simply unfamiliar.",
+      "Deliberate repetition turns a fragile sequence into a dependable motor pattern.",
+      "Nuance matters: fluency is not only velocity, but the ability to recover without losing the thread."
+    ]
+  },
+  "programming": {
+    "beginner": [
+      "const name = 'TypeSprint';",
+      "let count = 0;",
+      "function start() { return true; }"
+    ],
+    "intermediate": [
+      "const score = Math.round((correct / total) * 100);",
+      "for (const item of queue) { render(item); }",
+      "if (elapsedMs > limitMs) finish('timeout');"
+    ],
+    "advanced": [
+      "export function clamp(value, min, max) { return Math.min(Math.max(value, min), max); }",
+      "const next = items.filter(Boolean).map(normalize).sort((a, b) => a.rank - b.rank);",
+      "try { await saveResult(payload); } catch (error) { console.warn('Saved locally', error); }"
+    ]
+  },
+  "daily": [
+    { "title": "The one-minute reset", "text": "A short, focused typing session can be a useful reset between larger tasks. Breathe out, relax your shoulders, and give the next character your full attention." },
+    { "title": "Make room for accuracy", "text": "Speed becomes more useful when it is supported by control. Let your hands follow the words, notice the small corrections, and leave the session with one clear lesson." },
+    { "title": "A repeatable rhythm", "text": "The most valuable practice is easy to return to. Choose a comfortable pace, keep your eyes on the line, and build a rhythm that can travel with you into tomorrow." },
+    { "title": "Quiet progress", "text": "Progress is often quieter than a personal record. A cleaner correction, a softer wrist, or one fewer hesitation can be enough evidence that your practice is working." },
+    { "title": "Focus on the next key", "text": "You do not need to predict the whole passage. Read ahead just enough to prepare, then focus on the next key with calm and steady intent." }
+  ]
+}

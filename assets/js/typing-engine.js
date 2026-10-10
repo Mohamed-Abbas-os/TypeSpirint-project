@@ -1,0 +1,28 @@
+export class TypingEngine {
+  constructor({ passageEl, inputEl, timerEl, progressEl, duration = 60, onState = () => {}, onFinish = () => {} }) {
+    this.els = { passageEl, inputEl, timerEl, progressEl }; this.duration = Number(duration) || 60; this.onState = onState; this.onFinish = onFinish;
+    this.state = 'idle'; this.startedAt = 0; this.pausedAt = 0; this.elapsedBeforePause = 0; this.frame = 0; this.text = ''; this.value = '';
+    this.handleInput = this.handleInput.bind(this); this.handleKeydown = this.handleKeydown.bind(this); this.handlePaste = this.handlePaste.bind(this); this.loop = this.loop.bind(this);
+    inputEl.addEventListener('input', this.handleInput); inputEl.addEventListener('keydown', this.handleKeydown); inputEl.addEventListener('paste', this.handlePaste);
+  }
+  setPassage(text) { this.text = String(text || ''); this.value = ''; this.state = 'idle'; this.startedAt = 0; this.pausedAt = 0; this.elapsedBeforePause = 0; cancelAnimationFrame(this.frame); this.render(); this.updateClock(0); this.els.inputEl.value = ''; this.els.inputEl.disabled = false; this.els.inputEl.setAttribute('aria-label', 'Type the passage'); }
+  setDuration(seconds) { this.duration = Number(seconds) || 60; if (this.state === 'idle') this.updateClock(0); }
+  start() { if (this.state === 'running') return; if (this.state === 'paused') { this.resume(); return; } if (this.state !== 'idle') return; this.startedAt = performance.now(); this.elapsedBeforePause = 0; this.state = 'running'; this.els.inputEl.focus(); this.loop(); this.emit(); }
+  pause() { if (this.state !== 'running') return; this.pausedAt = performance.now(); this.elapsedBeforePause = this.elapsed(); this.state = 'paused'; cancelAnimationFrame(this.frame); this.emit(); }
+  resume() { if (this.state !== 'paused') return; this.startedAt = performance.now(); this.state = 'running'; this.loop(); this.emit(); }
+  cancel() { if (this.state === 'complete' || this.state === 'cancelled') return; cancelAnimationFrame(this.frame); this.state = 'cancelled'; this.els.inputEl.disabled = true; this.emit(); }
+  restart(text = this.text) { this.setPassage(text); this.els.inputEl.focus(); this.emit(); }
+  elapsed() { return this.state === 'paused' ? this.elapsedBeforePause : this.state === 'running' ? this.elapsedBeforePause + ((performance.now() - this.startedAt) / 1000) : this.elapsedBeforePause; }
+  handleKeydown(event) { if (event.key === 'Tab') event.preventDefault(); if (event.key === 'Enter' && this.state === 'idle') { event.preventDefault(); this.start(); } }
+  handlePaste(event) { event.preventDefault(); const pasted = event.clipboardData?.getData('text') || ''; if (pasted) this.insertText(pasted); }
+  insertText(text) { if (this.state === 'idle') this.start(); if (!['running', 'paused'].includes(this.state)) return; const start = this.els.inputEl.selectionStart ?? this.value.length; const end = this.els.inputEl.selectionEnd ?? start; this.value = `${this.value.slice(0, start)}${text}${this.value.slice(end)}`; this.els.inputEl.value = this.value; this.els.inputEl.setSelectionRange(start + text.length, start + text.length); this.handleValue(); }
+  handleInput() { if (this.state === 'idle' && this.els.inputEl.value) this.start(); if (!['running', 'paused'].includes(this.state)) return; this.value = this.els.inputEl.value; this.handleValue(); }
+  handleValue() { this.render(); this.emit(); if (this.value.length >= this.text.length) this.finish('completed'); }
+  updateClock(elapsed) { const remaining = Math.max(0, this.duration - elapsed); this.els.timerEl.textContent = `${remaining.toFixed(1)}s`; this.els.progressEl.style.width = `${Math.min(100, (elapsed / this.duration) * 100)}%`; }
+  loop() { if (this.state !== 'running') return; const elapsed = this.elapsed(); this.updateClock(elapsed); if (elapsed >= this.duration) { this.finish('timeout'); return; } this.frame = requestAnimationFrame(this.loop); }
+  metrics() { const typed = this.value; let correct = 0; for (let i = 0; i < typed.length; i += 1) if (typed[i] === this.text[i]) correct += 1; const incorrect = Math.max(0, typed.length - correct); const seconds = Math.max(this.elapsed(), 0); const minutes = seconds / 60; const grossWpm = minutes > 0 ? (typed.length / 5) / minutes : 0; const netWpm = minutes > 0 ? Math.max(0, grossWpm - ((incorrect / 5) / minutes)) : 0; const accuracy = typed.length ? (correct / typed.length) * 100 : 0; return { grossWpm, netWpm, accuracy, correct, incorrect, total: typed.length, duration: seconds, textLength: this.text.length }; }
+  render() { const fragment = document.createDocumentFragment(); for (let i = 0; i < this.text.length; i += 1) { const span = document.createElement('span'); span.textContent = this.text[i]; if (i < this.value.length) span.className = this.value[i] === this.text[i] ? 'correct' : 'incorrect'; if (i === this.value.length && ['idle', 'running', 'paused'].includes(this.state)) span.classList.add('current'); fragment.appendChild(span); } this.els.passageEl.replaceChildren(fragment); }
+  finish(reason) { if (!['running', 'paused'].includes(this.state)) return; if (this.state === 'running') this.elapsedBeforePause = this.elapsed(); cancelAnimationFrame(this.frame); this.state = 'complete'; this.els.inputEl.disabled = true; this.updateClock(Math.min(this.elapsedBeforePause, this.duration)); this.onFinish({ reason, metrics: this.metrics() }); this.emit(); }
+  emit() { this.onState({ state: this.state, metrics: this.metrics() }); }
+  destroy() { cancelAnimationFrame(this.frame); this.els.inputEl.removeEventListener('input', this.handleInput); this.els.inputEl.removeEventListener('keydown', this.handleKeydown); this.els.inputEl.removeEventListener('paste', this.handlePaste); }
+}

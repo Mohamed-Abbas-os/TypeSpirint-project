@@ -1,0 +1,22 @@
+import { TypingEngine } from './typing-engine.js';
+import { pickPassage, categories, getDailyChallenge } from './passages.js';
+import { getPreferences, savePreferences, saveResult } from './storage.js';
+import { formatResult, renderResults } from './results.js';
+
+const prefs = getPreferences();
+const settings = { duration: Number(prefs.duration) || 60, difficulty: prefs.difficulty || 'beginner', category: 'common' };
+let engine; let passage = '';
+const $ = selector => document.querySelector(selector);
+function setStatus(text) { const el = $('[data-test-status]'); if (el) el.textContent = text; }
+async function loadPassage() { passage = await pickPassage(settings.category, settings.difficulty, $('#custom-text')?.value); $('#passage-label').textContent = settings.category === 'custom' ? 'Custom passage' : categories[settings.category] || 'Typing passage'; engine?.destroy(); engine = new TypingEngine({ passageEl: $('[data-passage]'), inputEl: $('[data-typing-input]'), timerEl: $('[data-timer]'), progressEl: $('[data-progress]'), duration: settings.duration, onState: ({ state }) => { setStatus(state === 'running' ? 'Typing in progress' : state === 'paused' ? 'Paused — resume when ready' : state === 'complete' ? 'Finished' : state === 'cancelled' ? 'Cancelled' : 'Ready when you are'); $('[data-pause]').textContent = state === 'paused' ? 'Resume' : 'Pause'; }, onFinish: ({ metrics }) => { const result = formatResult(metrics, settings.category); saveResult(result); renderResults($('[data-results]'), result, { scope: settings.category, onRetry: () => { $('[data-results]').hidden = true; engine.restart(passage); setStatus('Ready when you are'); }, onAnother: async () => { $('[data-results]').hidden = true; await loadPassage(); setStatus('Ready when you are'); } }); $('#results-heading').focus(); } }); engine.setPassage(passage); }
+function updatePressed(group, value) { document.querySelectorAll(`[data-${group}]`).forEach(button => button.setAttribute('aria-pressed', String(button.dataset.value === String(value)))); }
+export async function initTypingTest() {
+  document.querySelectorAll('[data-duration]').forEach(button => button.addEventListener('click', () => { settings.duration = Number(button.dataset.value); updatePressed('duration', settings.duration); savePreferences({ duration: settings.duration }); engine?.setDuration(settings.duration); }));
+  document.querySelectorAll('[data-difficulty]').forEach(button => button.addEventListener('click', async () => { settings.difficulty = button.dataset.value; updatePressed('difficulty', settings.difficulty); savePreferences({ difficulty: settings.difficulty }); await loadPassage(); }));
+  $('[data-category]')?.addEventListener('change', async e => { settings.category = e.target.value; $('#custom-wrap').hidden = settings.category !== 'custom'; await loadPassage(); });
+  $('[data-custom-text]')?.addEventListener('input', () => { if (settings.category === 'custom') loadPassage(); });
+  $('[data-start]')?.addEventListener('click', () => engine?.start()); $('[data-pause]')?.addEventListener('click', () => { if (engine?.state === 'paused') engine.resume(); else engine?.pause(); });
+  $('[data-cancel]')?.addEventListener('click', () => engine?.cancel()); $('[data-restart]')?.addEventListener('click', () => engine?.restart(passage));
+  $('[data-daily-link]')?.addEventListener('click', async () => { const daily = await getDailyChallenge(); settings.category = 'daily'; settings.duration = 60; passage = daily.text; await loadPassage(); });
+  updatePressed('duration', settings.duration); updatePressed('difficulty', settings.difficulty); await loadPassage();
+}
